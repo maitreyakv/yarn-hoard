@@ -1,0 +1,9 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - action: rebuild
+          path: backend
