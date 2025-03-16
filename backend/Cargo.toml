@@ -1,12 +1,10 @@
 [package]
-name = "yarn-hoard"
+name = "yarn-hoard-api"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 axum = "0.8.1"
+axum-extra = { version = "0.10.0", features = ["erased-json"] }
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 
-[[bin]]
-name = "yarn-hoard-api"
-path = "src/main.rs"
