@@ -1,8 +1,11 @@
-FROM rust:1.85-alpine3.20 AS builder
+FROM rust:1.85-alpine3.20 AS base
 
 RUN apk add musl-dev
 WORKDIR /app
 COPY . .
+
+FROM base AS builder
+
 RUN cargo install --path .
 
 FROM alpine:3.20

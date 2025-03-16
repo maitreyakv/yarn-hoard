@@ -1,9 +1,15 @@
 services:
   api:
-    build: ./backend
+    build: 
+      context: ./backend
+      target: base
     ports:
       - "3000:3000"
+    command: "/bin/sh -c 'cargo run'"
     develop:
       watch:
-        - action: rebuild
-          path: backend
+        - action: sync+restart
+          path: ./backend
+          target: /app
+          ignore: 
+          - target
