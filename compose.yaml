@@ -1,11 +1,15 @@
 services:
   api:
+    depends_on:
+      db:
+        condition: service_started 
+        restart: true
     build: 
       context: ./backend
       target: base
     ports:
-      - "3000:3000"
-    command: "/bin/sh -c 'cargo run'"
+      - 3000:3000
+    command: /bin/sh -c 'cargo run'
     develop:
       watch:
         - action: sync+restart
@@ -13,3 +17,13 @@ services:
           target: /app
           ignore: 
           - target
+  db:
+    image: postgres:17.4
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: yarn_hoard
+      POSTGRES_PASSWORD: password
+    volumes:
+    - ./data:/var/lib/postgresql/data
+

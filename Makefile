@@ -2,7 +2,10 @@ all:
 	@COMPOSE_BAKE=true docker compose up --watch --build
 
 check:
-	@cd backend && cargo check
+	@$(MAKE) -C backend $@
+
+psql:
+	@$(MAKE) -C backend $@
 
 clean:
 	@docker compose down
