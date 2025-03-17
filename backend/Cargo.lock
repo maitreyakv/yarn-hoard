@@ -2311,6 +2311,7 @@ dependencies = [
  "axum",
  "axum-extra",
  "sqlx",
+ "thiserror",
  "tokio",
  "tower-http",
  "tracing",

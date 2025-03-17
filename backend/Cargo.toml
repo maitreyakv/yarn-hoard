@@ -7,6 +7,7 @@ edition = "2024"
 axum = "0.8.1"
 axum-extra = { version = "0.10.0", features = ["erased-json"] }
 sqlx = { version = "0.8.3", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "migrate"] }
+thiserror = "2.0.12"
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.6.2", features = ["trace"] }
 tracing = "0.1.41"
