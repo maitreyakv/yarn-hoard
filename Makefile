@@ -9,4 +9,4 @@ psql:
 
 clean:
 	@docker compose down
-	@cd backend && cargo clean
+	@$(MAKE) -C backend $@

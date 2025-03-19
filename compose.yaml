@@ -6,16 +6,11 @@ services:
         restart: true
     build: 
       context: ./backend
-      target: base
+      target: dev
     ports:
       - 3000:3000
-    command: /bin/sh -c 'cargo run'
     environment:
-      PGHOST: db
-      PGPORT: 5432
-      PGUSER: yarn_hoard
-      PGPASSWORD: password
-      PGDATABASE: yarn_hoard
+      DATABASE_URL: postgres://yarn_hoard:password@db:5432/yarn_hoard
     develop:
       watch:
         - action: sync+restart
