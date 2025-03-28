@@ -14,6 +14,7 @@ impl MigrationTrait for Migration {
                     .col(text(Users::Email))
                     .col(string_len(Users::HashedPassword, 64))
                     .col(string_len(Users::Salt, 8))
+                    .col(boolean(Users::IsActivated))
                     .to_owned(),
             )
             .await
@@ -33,4 +34,5 @@ enum Users {
     Email,
     HashedPassword,
     Salt,
+    IsActivated,
 }

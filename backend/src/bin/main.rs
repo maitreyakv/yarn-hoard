@@ -1,5 +1,5 @@
 /// The main file for the `yarn-hoard-api` binary, the server for the API
-use yarn_hoard_api::build_app;
+use api::build_app;
 
 #[tokio::main]
 async fn main() {
