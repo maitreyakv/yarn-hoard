@@ -2,7 +2,7 @@ use axum::{Json, http::StatusCode};
 use secrecy::SecretString;
 use serde::Deserialize;
 
-//#[tracing::instrument(ret, err)]
+#[tracing::instrument(ret, err)]
 pub async fn create_user(Json(req): Json<CreateUser>) -> Result<(), StatusCode> {
     let user: User = req.into();
     dbg!(user);
