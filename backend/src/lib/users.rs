@@ -1,17 +1,20 @@
-use axum::{extract::Json, http::StatusCode, response::IntoResponse};
+use axum::{Json, http::StatusCode};
 use secrecy::SecretString;
 use serde::Deserialize;
 
-use crate::json_api::JsonApiCreate;
+//#[tracing::instrument(ret, err)]
+pub async fn create_user(Json(req): Json<CreateUser>) -> Result<(), StatusCode> {
+    let user: User = req.into();
+    dbg!(user);
 
-#[tracing::instrument(ret)]
-pub async fn create_user(Json(payload): Json<JsonApiCreate<CreateUser>>) -> impl IntoResponse {
-    StatusCode::NOT_IMPLEMENTED
+    Ok(())
 }
 
 #[derive(Debug, Deserialize)]
-pub struct CreateUser {
+struct User {
     email: String,
     hashed_password: SecretString,
     salt: SecretString,
 }
+
+crate::jsonapi::create!(User);

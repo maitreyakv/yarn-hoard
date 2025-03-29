@@ -22,10 +22,15 @@ migration = { path = "migration" }
 anyhow = "1.0.97"
 axum = "0.8.1"
 axum-extra = { version = "0.10.0", features = ["erased-json"] }
+paste = "1.0.15"
 sea-orm = { version = "1.1.7", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
+thiserror = "2.0.12"
 tokio = { version = "1.44.1", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.6.2", features = ["trace"] }
 tracing = "0.1.41"
 tracing-subscriber = "0.3.19"
 serde = "1.0.219"
 secrecy = { version = "0.10.3", features = ["serde"] }
+
+[dev-dependencies]
+serde_json = "1.0.140"
