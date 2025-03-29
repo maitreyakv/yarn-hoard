@@ -11,7 +11,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Users::Table)
                     .col(pk_auto(Users::Id))
-                    .col(text(Users::Email))
+                    .col(text_uniq(Users::Email))
                     .col(string_len(Users::HashedPassword, 64))
                     .col(string_len(Users::Salt, 8))
                     .col(boolean(Users::IsActivated))

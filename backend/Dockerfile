@@ -1,5 +1,5 @@
 FROM rust:1.85-alpine3.20 AS base
-RUN apk add musl-dev
+RUN apk add musl-dev alpine-sdk openssl-dev perl
 WORKDIR /app
 COPY . .
 

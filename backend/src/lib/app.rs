@@ -1,7 +1,11 @@
 use axum::{
     Router,
+    extract::FromRef,
+    http::StatusCode,
+    response::IntoResponse,
     routing::{get, post},
 };
+use sea_orm::{DatabaseConnection, DbErr, TransactionError};
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -11,7 +15,7 @@ use crate::{
 /// Build the Axum application for the API.
 #[tracing::instrument(err)]
 pub async fn build_app() -> anyhow::Result<Router> {
-    let _db = connect_to_db_and_run_migrations().await?;
+    let db = connect_to_db_and_run_migrations().await?;
 
     Ok(Router::new()
         .nest(
@@ -23,5 +27,36 @@ pub async fn build_app() -> anyhow::Result<Router> {
                     .route("/users", post(create_user)),
             ),
         )
+        .with_state(AppState { db })
         .layer(TraceLayer::new_for_http()))
+}
+
+#[derive(Clone)]
+pub struct AppState {
+    db: DatabaseConnection,
+}
+
+impl FromRef<AppState> for DatabaseConnection {
+    fn from_ref(app_state: &AppState) -> Self {
+        app_state.db.clone()
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum AppError {
+    #[error(transparent)]
+    DbErr(#[from] DbErr),
+
+    #[error(transparent)]
+    TransactionError(#[from] TransactionError<DbErr>),
+}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> axum::response::Response {
+        match self {
+            AppError::DbErr(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+            AppError::TransactionError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+        }
+        .into_response()
+    }
 }

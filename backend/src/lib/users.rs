@@ -1,11 +1,29 @@
-use axum::{Json, http::StatusCode};
-use secrecy::SecretString;
+use axum::{Json, extract::State};
+use entity::users;
+use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TransactionTrait};
+use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
 
-#[tracing::instrument(ret, err)]
-pub async fn create_user(Json(req): Json<CreateUser>) -> Result<(), StatusCode> {
-    let user: User = req.into();
-    dbg!(user);
+use crate::app::AppError;
+
+#[tracing::instrument(ret, err, skip(db))]
+pub async fn create_user(
+    State(db): State<DatabaseConnection>,
+    Json(request): Json<CreateUser>,
+) -> Result<(), AppError> {
+    db.transaction::<_, (), sea_orm::DbErr>(|txn| {
+        Box::pin(async move {
+            users::ActiveModel::from(User::from(request))
+                .save(txn)
+                .await?;
+
+            // TODO: Insert confirm
+            // TODO: Send email
+
+            Ok(())
+        })
+    })
+    .await?;
 
     Ok(())
 }
@@ -13,8 +31,21 @@ pub async fn create_user(Json(req): Json<CreateUser>) -> Result<(), StatusCode> 
 #[derive(Debug, Deserialize)]
 struct User {
     email: String,
-    hashed_password: SecretString,
-    salt: SecretString,
+    password: SecretString,
 }
 
 crate::jsonapi::create!(User);
+
+impl From<User> for users::ActiveModel {
+    fn from(user: User) -> Self {
+        let salt = crate::auth::generate_salt();
+        let hashed_password = crate::auth::hash_password(&user.password, &salt);
+        users::ActiveModel {
+            email: Set(user.email.to_owned()),
+            hashed_password: Set(hashed_password.expose_secret().to_owned()),
+            salt: Set(salt.expose_secret().to_owned()),
+            is_activated: Set(false),
+            ..Default::default()
+        }
+    }
+}
