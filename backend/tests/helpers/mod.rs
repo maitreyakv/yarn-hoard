@@ -1,4 +1,5 @@
 use api::AppConfig;
+use sea_orm::{Database, DatabaseConnection, EntityTrait, PrimaryKeyTrait, Select};
 use testcontainers_modules::{
     postgres::Postgres,
     testcontainers::{ContainerAsync, runners::AsyncRunner},
@@ -9,19 +10,20 @@ pub struct TestApp {
     app_port: u16,
     api_client: reqwest::Client,
     _db_container: ContainerAsync<Postgres>,
+    db: DatabaseConnection,
 }
 
 impl TestApp {
     pub async fn new() -> Self {
         let container = Postgres::default().start().await.unwrap();
+        let db_url = format!(
+            "postgres://postgres:postgres@{}:{}/postgres",
+            container.get_host().await.unwrap(),
+            container.get_host_port_ipv4(5432).await.unwrap(),
+        );
 
         let app = api::build_app(AppConfig {
-            database_url: format!(
-                "postgres://postgres:postgres@{}:{}/postgres",
-                container.get_host().await.unwrap(),
-                container.get_host_port_ipv4(5432).await.unwrap(),
-            )
-            .into(),
+            database_url: db_url.to_owned().into(),
         })
         .await
         .unwrap();
@@ -44,6 +46,7 @@ impl TestApp {
             app_port,
             api_client: reqwest::Client::new(),
             _db_container: container,
+            db: Database::connect(db_url).await.unwrap(),
         }
     }
 
@@ -57,6 +60,15 @@ impl TestApp {
             .send()
             .await
             .unwrap()
+    }
+
+    pub async fn find_exactly_one<E: EntityTrait>(&self, select: Select<E>) -> E::Model
+    where
+        <<E as EntityTrait>::PrimaryKey as PrimaryKeyTrait>::ValueType: From<i32>,
+    {
+        let rows = select.all(&self.db).await.unwrap();
+        assert!(rows.len().eq(&1));
+        rows.into_iter().next().unwrap()
     }
 }
 

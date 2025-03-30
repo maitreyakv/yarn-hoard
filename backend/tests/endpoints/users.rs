@@ -1,3 +1,6 @@
+use entity::users;
+use sea_orm::EntityTrait;
+
 use crate::helpers::{AssertResponse, TestApp, jsonapi_create};
 
 #[tokio::test]
@@ -13,6 +16,22 @@ async fn test_create_returns_200_when_ok() {
         )
         .await
         .assert_status(200);
+}
+
+#[tokio::test]
+async fn test_create_inserts_new_user_when_ok() {
+    let app = TestApp::new().await;
+    app.post_v1(
+        "users",
+        jsonapi_create!("user", {
+            "email": "test@example.com",
+            "password": "somePassword"
+        }),
+    )
+    .await;
+    let user = app.find_exactly_one(users::Entity::find()).await;
+    assert_eq!(user.email, "test@example.com");
+    assert!(!user.is_activated);
 }
 
 #[tokio::test]
