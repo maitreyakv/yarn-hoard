@@ -6,6 +6,7 @@ use axum::{
     routing::{get, post},
 };
 use sea_orm::{DatabaseConnection, DbErr, TransactionError};
+use secrecy::SecretString;
 use tower_http::trace::TraceLayer;
 
 use crate::{
@@ -14,8 +15,8 @@ use crate::{
 
 /// Build the Axum application for the API.
 #[tracing::instrument(err)]
-pub async fn build_app() -> anyhow::Result<Router> {
-    let db = connect_to_db_and_run_migrations().await?;
+pub async fn build_app(config: AppConfig) -> anyhow::Result<Router> {
+    let db = connect_to_db_and_run_migrations(config.database_url).await?;
 
     Ok(Router::new()
         .nest(
@@ -31,8 +32,13 @@ pub async fn build_app() -> anyhow::Result<Router> {
         .layer(TraceLayer::new_for_http()))
 }
 
+#[derive(Debug)]
+pub struct AppConfig {
+    pub database_url: SecretString,
+}
+
 #[derive(Clone)]
-pub struct AppState {
+struct AppState {
     db: DatabaseConnection,
 }
 

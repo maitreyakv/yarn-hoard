@@ -1,6 +1,9 @@
 all:
 	@COMPOSE_BAKE=true docker compose up --watch --build
 
+test:
+	@$(MAKE) -C backend $@
+
 check:
 	@$(MAKE) -C backend $@
 

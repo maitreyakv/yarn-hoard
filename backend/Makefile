@@ -1,8 +1,11 @@
 check:
-	@cargo check
+	@cargo check --all-targets
+
+watch:
+	@cargo watch --clear -x "check --all-targets" -x "test --workspace --all-targets"
 
 test:
-	@cargo test
+	@cargo test --workspace --all-targets
 
 build-entities:
 	@sea-orm-cli generate entity \
