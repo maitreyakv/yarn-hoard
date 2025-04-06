@@ -1,5 +1,5 @@
 use axum::{Json, extract::State};
-use entity::users;
+use entity::{confirmations, users};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TransactionTrait};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
@@ -13,11 +13,18 @@ pub async fn create_user(
 ) -> Result<(), AppError> {
     db.transaction::<_, (), sea_orm::DbErr>(|txn| {
         Box::pin(async move {
-            users::ActiveModel::from(User::from(request))
+            let user = users::ActiveModel::from(User::from(request))
                 .save(txn)
                 .await?;
 
-            // TODO: Insert confirm
+            let _confirmation = confirmations::ActiveModel {
+                user_id: user.id,
+                token: Set(generate_confirmation_token()),
+                ..Default::default()
+            }
+            .save(txn)
+            .await?;
+
             // TODO: Send email
 
             Ok(())
@@ -48,4 +55,10 @@ impl From<User> for users::ActiveModel {
             ..Default::default()
         }
     }
+}
+
+fn generate_confirmation_token() -> String {
+    let mut token_bytes = [0; 16].to_vec();
+    openssl::rand::rand_bytes(&mut token_bytes).unwrap();
+    hex::encode(token_bytes)
 }

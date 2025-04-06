@@ -1,4 +1,4 @@
-CARGO_CHECK_CMD = "check --all-targets"
+CARGO_CHECK_CMD = "check --all-targets --workspace"
 CARGO_TEST_CMD = "test --workspace --all-targets"
 CARGO_FMT_CMD = "fmt --check --all"
 CARGO_CLIPPY_CMD = "clippy -- -D warnings"
@@ -15,6 +15,9 @@ watch:
 
 test:
 	@cargo $(CARGO_TEST_CMD)
+
+add-migration:
+	@sea-orm-cli migrate generate "$(NAME)"
 
 build-entities:
 	@sea-orm-cli generate entity \

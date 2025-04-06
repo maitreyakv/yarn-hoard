@@ -11,10 +11,20 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Users::Table)
                     .col(pk_auto(Users::Id))
-                    .col(text_uniq(Users::Email))
-                    .col(string_len(Users::HashedPassword, 64))
-                    .col(string_len(Users::Salt, 8))
+                    .col(string_uniq(Users::Email))
+                    .col(string_uniq(Users::HashedPassword))
+                    .col(string(Users::Salt))
                     .col(boolean(Users::IsActivated))
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("users_email_idx")
+                    .table(Users::Table)
+                    .col(Users::Email)
                     .to_owned(),
             )
             .await
@@ -28,7 +38,7 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum Users {
+pub enum Users {
     Table,
     Id,
     Email,
