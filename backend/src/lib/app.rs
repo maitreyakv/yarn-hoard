@@ -3,14 +3,15 @@ use axum::{
     extract::FromRef,
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post},
+    routing::{get, post, put},
 };
 use sea_orm::{DatabaseConnection, DbErr, TransactionError};
 use secrecy::SecretString;
 use tower_http::trace::TraceLayer;
 
 use crate::{
-    database::connect_to_db_and_run_migrations, health_check::health_check, users::create_user,
+    confirm::confirm, database::connect_to_db_and_run_migrations, health_check::health_check,
+    users::create_user,
 };
 
 /// Build the Axum application for the API.
@@ -25,7 +26,8 @@ pub async fn build_app(config: AppConfig) -> anyhow::Result<Router> {
                 "/v1",
                 Router::new()
                     .route("/health", get(health_check))
-                    .route("/users", post(create_user)),
+                    .route("/users", post(create_user))
+                    .route("/confirm/{token}", put(confirm)),
             ),
         )
         .with_state(AppState { db })
@@ -55,14 +57,23 @@ pub enum AppError {
 
     #[error(transparent)]
     TransactionError(#[from] TransactionError<DbErr>),
+
+    #[error("{}", StatusCode::NOT_FOUND)]
+    NotFound,
+
+    #[error("{}", StatusCode::INTERNAL_SERVER_ERROR)]
+    InternalServerError,
 }
 
 impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         match self {
-            AppError::DbErr(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-            AppError::TransactionError(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
+            Self::DbErr(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+            Self::TransactionError(e) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
+            }
+            Self::NotFound => StatusCode::NOT_FOUND.into_response(),
+            Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
         }
-        .into_response()
     }
 }

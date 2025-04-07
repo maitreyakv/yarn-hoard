@@ -50,13 +50,36 @@ impl TestApp {
         }
     }
 
-    pub async fn post_v1(&self, path: &str, json: serde_json::Value) -> reqwest::Response {
+    pub async fn with_unactivated_user(self) -> Self {
+        self.post_v1_json(
+            "users",
+            jsonapi_create!("user", {
+                "email": "test@example.com",
+                "password": "somePassword"
+            }),
+        )
+        .await;
+        self
+    }
+
+    pub async fn post_v1_json(&self, path: &str, json: serde_json::Value) -> reqwest::Response {
         self.api_client
             .post(format!(
                 "http://localhost:{}/api/v1/{}",
                 self.app_port, path
             ))
             .json(&json)
+            .send()
+            .await
+            .unwrap()
+    }
+
+    pub async fn put_v1(&self, path: &str) -> reqwest::Response {
+        self.api_client
+            .put(format!(
+                "http://localhost:{}/api/v1/{}",
+                self.app_port, path
+            ))
             .send()
             .await
             .unwrap()
@@ -69,6 +92,11 @@ impl TestApp {
         let rows = select.all(&self.db).await.unwrap();
         assert!(rows.len().eq(&1));
         rows.into_iter().next().unwrap()
+    }
+
+    pub async fn assert_found_none<E: EntityTrait>(&self, select: Select<E>) {
+        let rows = select.all(&self.db).await.unwrap();
+        assert!(rows.len().eq(&0));
     }
 }
 
