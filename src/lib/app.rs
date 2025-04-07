@@ -10,8 +10,8 @@ use secrecy::SecretString;
 use tower_http::trace::TraceLayer;
 
 use crate::{
-    confirm::confirm, database::connect_to_db_and_run_migrations, health_check::health_check,
-    users::create_user,
+    database::connect_to_db_and_run_migrations,
+    endpoints::{confirm::confirm, health_check::health_check, users::create_user},
 };
 
 /// Build the Axum application for the API.
