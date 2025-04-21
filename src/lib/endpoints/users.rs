@@ -1,19 +1,20 @@
-use axum::{Json, extract::State};
+use axum::extract::State;
 use entity::{confirmations, users};
 use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TransactionTrait};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
 
 use crate::app::AppError;
+use crate::jsonapi::JsonApiCreate;
 
 #[tracing::instrument(ret, err, skip(db))]
 pub async fn create_user(
     State(db): State<DatabaseConnection>,
-    Json(request): Json<CreateUser>,
+    json: JsonApiCreate<UserCreate>,
 ) -> Result<(), AppError> {
     db.transaction::<_, (), sea_orm::DbErr>(|txn| {
         Box::pin(async move {
-            let user = users::ActiveModel::from(User::from(request))
+            let user = users::ActiveModel::from(json.into_inner())
                 .save(txn)
                 .await?;
 
@@ -36,15 +37,13 @@ pub async fn create_user(
 }
 
 #[derive(Debug, Deserialize)]
-struct User {
+pub(crate) struct UserCreate {
     email: String,
     password: SecretString,
 }
 
-crate::jsonapi::create!(User);
-
-impl From<User> for users::ActiveModel {
-    fn from(user: User) -> Self {
+impl From<UserCreate> for users::ActiveModel {
+    fn from(user: UserCreate) -> Self {
         let salt = crate::auth::generate_salt();
         let hashed_password = crate::auth::hash_password(&user.password, &salt);
         users::ActiveModel {
