@@ -8,7 +8,6 @@ use tracing::error;
 
 use crate::app::AppError;
 
-#[tracing::instrument(ret, err, skip(db))]
 pub async fn confirm(
     State(db): State<DatabaseConnection>,
     Path(token): Path<String>,

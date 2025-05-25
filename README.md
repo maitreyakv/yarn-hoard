@@ -6,3 +6,4 @@ Documentation coming soon... 🏗️
 ## Development
 
 1. Install [`sea-orm-cli`](https://github.com/SeaQL/sea-orm/blob/master/sea-orm-cli/README.md)
+2. Install [`trunk`](https://trunkrs.dev/#install)

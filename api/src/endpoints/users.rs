@@ -7,7 +7,6 @@ use serde::Deserialize;
 use crate::app::AppError;
 use crate::jsonapi::JsonApiCreate;
 
-#[tracing::instrument(ret, err, skip(db))]
 pub async fn create_user(
     State(db): State<DatabaseConnection>,
     json: JsonApiCreate<UserCreate>,

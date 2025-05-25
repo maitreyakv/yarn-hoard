@@ -11,5 +11,5 @@ FROM base AS builder
 RUN cargo install --path .
 
 FROM alpine:3.20 AS deploy
-COPY --from=builder /usr/local/cargo/bin/yarn-hoard-api /usr/local/bin/yarn-hoard-api
-CMD ["yarn-hoard-api"]
+COPY --from=builder /usr/local/cargo/bin/server /usr/local/bin/server
+CMD ["server"]
