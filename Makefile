@@ -9,6 +9,7 @@ all:
 clean:
 	docker compose down
 	cargo clean
+	trunk clean
 
 lint:
 	cargo $(CARGO_FMT_CMD)

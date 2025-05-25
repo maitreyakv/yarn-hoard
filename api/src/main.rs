@@ -8,7 +8,9 @@ async fn main() {
         .init();
 
     let config = AppConfig {
-        database_url: std::env::var("DATABASE_URL").unwrap().into(),
+        database_url: std::env::var("DATABASE_URL")
+            .expect("DATABASE_URL is not set!")
+            .into(),
     };
 
     let app = build_app(config).await.unwrap();
