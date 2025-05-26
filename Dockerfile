@@ -4,9 +4,8 @@ WORKDIR /app
 COPY . .
 
 FROM base AS dev 
-WORKDIR api/server
-RUN cargo build
-CMD ["cargo", "run"]
+RUN cargo build --bin api-server
+CMD ["cargo", "run", "--bin", "api-server"]
 
 # FROM base AS builder
 # RUN cargo install --path api

@@ -1,5 +1,5 @@
 services:
-  api:
+  api-server:
     depends_on:
       db:
         condition: service_started 
@@ -14,10 +14,10 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: .
-          target: /app
-          ignore: 
-          - target
+          path: ./api/server
+          target: /app/api/server
+          # ignore: 
+          # - target
   db:
     image: postgres:17.4
     ports:

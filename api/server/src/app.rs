@@ -7,7 +7,6 @@ use axum::{
 };
 use sea_orm::{DatabaseConnection, DbErr, TransactionError};
 use secrecy::SecretString;
-use tower_http::trace::TraceLayer;
 
 use crate::{
     database::connect_to_db_and_run_migrations,
@@ -31,7 +30,8 @@ pub async fn build_app(config: AppConfig) -> anyhow::Result<Router> {
             ),
         )
         .with_state(AppState { db })
-        .layer(TraceLayer::new_for_http()))
+        .layer(tower_http::cors::CorsLayer::permissive())
+        .layer(tower_http::trace::TraceLayer::new_for_http()))
 }
 
 #[derive(Debug)]

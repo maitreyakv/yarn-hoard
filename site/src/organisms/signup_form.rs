@@ -13,6 +13,20 @@ pub fn SignupForm() -> View {
         event.prevent_default();
         console_log!("{fields:?}");
         // TODO: post new user and redirect to "check email" page
+
+        let email = fields.email.get_clone();
+        let password = fields.password.get_clone();
+
+        // api_client::ApiClient
+        let future = async move {
+            let response = api_client::ApiClient::insecure(std::env!("API_URL"))
+                .create_user(&email, &password)
+                .await
+                .unwrap();
+            console_log!("{response:?}")
+        };
+
+        sycamore::futures::spawn_local(future);
     };
 
     form()

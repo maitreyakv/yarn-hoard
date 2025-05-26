@@ -133,6 +133,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
 
 [[package]]
+name = "api-client"
+version = "0.1.0"
+dependencies = [
+ "reqwest",
+ "serde_json",
+]
+
+[[package]]
 name = "api-server"
 version = "0.1.0"
 dependencies = [
@@ -147,6 +155,7 @@ dependencies = [
  "secrecy",
  "serde",
  "serde_json",
+ "testcontainers-modules",
  "thiserror",
  "tokio",
  "tower-http",
@@ -690,6 +699,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ca0197aee26d1ae37445ee532fefce43251d24cc7c166799f4d46817f1d3973"
 dependencies = [
  "crossbeam-utils",
+]
+
+[[package]]
+name = "console_error_panic_hook"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a06aeb73f470f66dcdbf7223caeebb85984942f22f1adb2a088cf9668146bbbc"
+dependencies = [
+ "cfg-if",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -2096,6 +2115,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "pin-project"
+version = "1.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "677f1add503faace112b9f1373e43e9e054bfdd22ff1a63c1bc485eaec6a6a8a"
+dependencies = [
+ "pin-project-internal",
+]
+
+[[package]]
+name = "pin-project-internal"
+version = "1.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e918e4ff8c4549eb882f14b3a4bc8c8bc93de829416eacf579f1207a8fbf861"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2979,6 +3018,8 @@ checksum = "e3a9fe34e3e7a50316060351f37187a3f546bce95496156754b601a5fa71b76e"
 name = "site"
 version = "0.1.0"
 dependencies = [
+ "api-client",
+ "console_error_panic_hook",
  "sycamore",
  "sycamore-router",
 ]
@@ -3318,14 +3359,17 @@ version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f38201dcb10aa609e81ca6f7547758a7eb602240a5ff682e668909fd0f7b2cc"
 dependencies = [
+ "futures",
  "hashbrown 0.14.5",
  "indexmap 2.8.0",
  "paste",
  "sycamore-core",
+ "sycamore-futures",
  "sycamore-macro",
  "sycamore-reactive",
  "sycamore-web",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
 ]
 
@@ -3337,7 +3381,22 @@ checksum = "41dc04bf0de321c6486356b2be751fac82fabb06c992d25b6748587561bba187"
 dependencies = [
  "hashbrown 0.14.5",
  "paste",
+ "sycamore-futures",
  "sycamore-reactive",
+]
+
+[[package]]
+name = "sycamore-futures"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f765c309eb1677494e37c94718180306ba92cbdb03f33aff2153ef6e5d84924a"
+dependencies = [
+ "futures",
+ "pin-project",
+ "sycamore-macro",
+ "sycamore-reactive",
+ "tokio",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -3406,12 +3465,15 @@ version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4b17aa5875f59f541cdf6fb58751ec702a6ed9801f30dd2b4d5f2279025b98bd"
 dependencies = [
+ "async-stream",
+ "futures",
  "html-escape",
  "js-sys",
  "once_cell",
  "paste",
  "smallvec",
  "sycamore-core",
+ "sycamore-futures",
  "sycamore-macro",
  "sycamore-reactive",
  "wasm-bindgen",
@@ -4443,20 +4505,6 @@ name = "yansi"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
-
-[[package]]
-name = "yarn-hoard"
-version = "0.1.0"
-dependencies = [
- "api-server",
- "axum",
- "entity",
- "reqwest",
- "sea-orm",
- "serde_json",
- "testcontainers-modules",
- "tokio",
-]
 
 [[package]]
 name = "yoke"

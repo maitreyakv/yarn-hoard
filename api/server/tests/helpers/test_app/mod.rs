@@ -7,7 +7,7 @@ use testcontainers_modules::{postgres::Postgres, testcontainers::ContainerAsync}
 
 pub struct TestApp {
     _close_tx: tokio::sync::oneshot::Sender<()>,
-    app_port: u16,
+    pub app_port: u16,
     api_client: reqwest::Client,
     _db_container: ContainerAsync<Postgres>,
     db: DatabaseConnection,
