@@ -4,12 +4,13 @@ WORKDIR /app
 COPY . .
 
 FROM base AS dev 
-RUN cargo build --bin api
-CMD ["cargo", "run", "--bin", "api"]
+WORKDIR api/server
+RUN cargo build
+CMD ["cargo", "run"]
 
-FROM base AS builder
-RUN cargo install --path api
-
-FROM alpine:3.20 AS deploy
-COPY --from=builder /usr/local/cargo/bin/server /usr/local/bin/server
-CMD ["server"]
+# FROM base AS builder
+# RUN cargo install --path api
+#
+# FROM alpine:3.20 AS deploy
+# COPY --from=builder /usr/local/cargo/bin/server /usr/local/bin/server
+# CMD ["server"]

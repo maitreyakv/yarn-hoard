@@ -133,7 +133,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
 
 [[package]]
-name = "api"
+name = "api-server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -147,7 +147,6 @@ dependencies = [
  "secrecy",
  "serde",
  "serde_json",
- "testcontainers-modules",
  "thiserror",
  "tokio",
  "tower-http",
@@ -4444,6 +4443,20 @@ name = "yansi"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
+
+[[package]]
+name = "yarn-hoard"
+version = "0.1.0"
+dependencies = [
+ "api-server",
+ "axum",
+ "entity",
+ "reqwest",
+ "sea-orm",
+ "serde_json",
+ "testcontainers-modules",
+ "tokio",
+]
 
 [[package]]
 name = "yoke"

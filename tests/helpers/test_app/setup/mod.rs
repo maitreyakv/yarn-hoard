@@ -1,4 +1,4 @@
-use api::AppConfig;
+use api_server::AppConfig;
 use sea_orm::Database;
 use testcontainers_modules::{postgres::Postgres, testcontainers::runners::AsyncRunner};
 
@@ -14,7 +14,7 @@ impl TestApp {
             container.get_host_port_ipv4(5432).await.unwrap(),
         );
 
-        let app = api::build_app(AppConfig {
+        let app = api_server::build_app(AppConfig {
             database_url: db_url.to_owned().into(),
         })
         .await

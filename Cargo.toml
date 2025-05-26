@@ -1,3 +1,21 @@
+[package]
+name = "yarn-hoard"
+version = "0.1.0"
+edition = "2024"
+
 [workspace]
 resolver = "1"
-members = ["api", "entity", "migration", "site"]
+members = ["api/server", "entity", "migration", "site"]
+
+[dev-dependencies]
+# Internal
+api-server = { path = "./api/server" }
+entity = { path = "./entity" }
+
+# External
+axum = "0.8.1"
+reqwest = "0.12.15"
+sea-orm = { version = "1.1.7" }
+serde_json = "1.0.140"
+testcontainers-modules = { version = "0.11.6", features = ["postgres"] }
+tokio = "1.44.1"
