@@ -17,7 +17,6 @@ pub fn SignupForm() -> View {
         let email = fields.email.get_clone();
         let password = fields.password.get_clone();
 
-        // api_client::ApiClient
         let future = async move {
             let response = api_client::ApiClient::insecure(std::env!("API_URL"))
                 .create_user(&email, &password)

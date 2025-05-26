@@ -1,4 +1,19 @@
 services:
+  site:
+    build:
+      context: .
+      target: base 
+    command: trunk serve --config=site/Trunk.toml --address=0.0.0.0
+    ports:
+      - 8080:8080
+    environment:
+      API_URL: "localhost:3000"
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./site
+          target: /app/site
+
   api-server:
     depends_on:
       db:
@@ -6,7 +21,8 @@ services:
         restart: true
     build: 
       context: .
-      target: dev
+      target: base
+    command: cargo run --bin api-server
     ports:
       - 3000:3000
     environment:
@@ -16,8 +32,7 @@ services:
         - action: sync+restart
           path: ./api/server
           target: /app/api/server
-          # ignore: 
-          # - target
+
   db:
     image: postgres:17.4
     ports:
@@ -25,6 +40,6 @@ services:
     environment:
       POSTGRES_USER: yarn_hoard
       POSTGRES_PASSWORD: password
-    volumes:
-    - ./data:/var/lib/postgresql/data
+    # volumes:
+    # - ./data:/var/lib/postgresql/data
 

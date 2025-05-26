@@ -1,0 +1,2 @@
+[serve]
+headers = { "Access-Control-Allow-Origin" = "*" }
