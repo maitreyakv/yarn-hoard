@@ -18,6 +18,15 @@ enum AppRoutes {
 
 #[component]
 pub fn App() -> View {
+    provide_context({
+        let api_url = std::env!("API_URL");
+        if api_url.contains("localhost") {
+            api_client::ApiClient::insecure(api_url)
+        } else {
+            api_client::ApiClient::secure(api_url)
+        }
+    });
+
     Router(RouterProps::new(
         HistoryIntegration::new(),
         |route: ReadSignal<AppRoutes>| {

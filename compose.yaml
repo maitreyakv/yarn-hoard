@@ -11,8 +11,8 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./site
-          target: /app/site
+          path: .
+          target: /app
 
   api-server:
     depends_on:
@@ -30,8 +30,8 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./api/server
-          target: /app/api/server
+          path: .
+          target: /app
 
   db:
     image: postgres:17.4

@@ -8,6 +8,9 @@ api-client = { path = "../api/client" }
 sycamore = { version = "0.9.1", features = ["suspense"] }
 sycamore-router = "0.9.1"
 console_error_panic_hook = "0.1.7"
+secrecy = "0.10.3"
+tracing-wasm = "0.2.1"
+tracing = "0.1.41"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ["cfg(sycamore_force_ssr)"] }

@@ -1,25 +1,21 @@
-use std::collections::HashSet;
-
+use secrecy::SecretString;
 use sycamore::prelude::*;
 use sycamore::web::bind::value;
 use sycamore::web::events::{SubmitEvent, submit};
 use sycamore::web::tags::*;
 
 #[component]
+#[tracing::instrument()]
 pub fn SignupForm() -> View {
-    let fields = Fields::new();
+    let api_client = use_context::<api_client::ApiClient>();
+    let submit_was_success: Signal<Option<bool>> = create_signal(None);
+    let form_ = Form::new();
 
     let on_submit = move |event: SubmitEvent| {
         event.prevent_default();
-        sycamore::futures::spawn_local({
-            let email = fields.email.get_clone();
-            let password = fields.password.get_clone();
-            async move {
-                api_client::ApiClient::insecure(std::env!("API_URL"))
-                    .create_user(&email, &password)
-                    .await
-                    .unwrap();
-            }
+        let api_client = api_client.clone();
+        sycamore::futures::spawn_local(async move {
+            submit_was_success.set(Some(form_.submit(api_client).await.is_ok()));
         });
     };
 
@@ -28,57 +24,60 @@ pub fn SignupForm() -> View {
         .children((
             div().children((
                 label().children("Email"),
-                input().r#type("email").bind(value, fields.email),
+                input().r#type("email").bind(value, form_.email),
             )),
             div().children((
                 label().children("Password"),
-                input().r#type("password").bind(value, fields.password),
+                input().r#type("password").bind(value, form_.password),
             )),
-            div().children(
+            div().children((
                 button()
-                    .disabled(move || fields.validate().is_err())
+                    .disabled(move || !form_.is_valid.get())
                     .children("Create Account"),
-            ),
+                move || match submit_was_success.get() {
+                    Some(true) => Some("Success!".into()),
+                    Some(false) => Some("Failure!".into()),
+                    None => None,
+                },
+            )),
         ))
         .into()
 }
 
 #[derive(Debug, Clone, Copy)]
-struct Fields {
+struct Form {
     email: Signal<String>,
     password: Signal<String>,
+    is_valid: ReadSignal<bool>,
 }
 
-impl Fields {
+impl Form {
     fn new() -> Self {
+        let email = create_signal(String::new());
+        let password = create_signal(String::new());
+        let is_valid = create_memo(move || {
+            if email.get_clone().is_empty() {
+                return false;
+            }
+            if password.get_clone().len().lt(&8) {
+                return false;
+            }
+            true
+        });
         Self {
-            email: create_signal(String::new()),
-            password: create_signal(String::new()),
+            email,
+            password,
+            is_valid,
         }
     }
 
-    fn validate(&self) -> Result<(String, String), HashSet<FieldError>> {
+    #[tracing::instrument(skip_all, err)]
+    async fn submit(
+        self,
+        api_client: api_client::ApiClient,
+    ) -> Result<(), api_client::ApiClientError> {
         let email = self.email.get_clone();
-        let password = self.password.get_clone();
-
-        let mut errors = HashSet::new();
-        if email.is_empty() {
-            errors.insert(FieldError::NoEmail);
-        }
-        if password.len().lt(&8) {
-            errors.insert(FieldError::ShortPassword);
-        }
-
-        if errors.is_empty() {
-            Ok((email, password))
-        } else {
-            Err(errors)
-        }
+        let password = SecretString::new(self.password.get_clone().into());
+        api_client.create_user(&email, &password).await
     }
-}
-
-#[derive(Eq, Hash, PartialEq)]
-enum FieldError {
-    NoEmail,
-    ShortPassword,
 }

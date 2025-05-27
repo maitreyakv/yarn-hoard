@@ -54,7 +54,7 @@ async fn post_inserts_new_confirmation_when_ok() {
 }
 
 #[tokio::test]
-async fn post_returns_422_when_missing_email() {
+async fn post_returns_400_when_missing_email() {
     TestApp::new()
         .await
         .post_v1_json(
@@ -64,17 +64,47 @@ async fn post_returns_422_when_missing_email() {
             }),
         )
         .await
+        .assert_status(400);
+}
+
+#[tokio::test]
+async fn post_returns_422_when_email_is_empty() {
+    TestApp::new()
+        .await
+        .post_v1_json(
+            "users",
+            jsonapi_create!("user", {
+                "email": "",
+                "password": "somePassword"
+            }),
+        )
+        .await
         .assert_status(422);
 }
 
 #[tokio::test]
-async fn post_returns_422_when_missing_password() {
+async fn post_returns_400_when_missing_password() {
     TestApp::new()
         .await
         .post_v1_json(
             "users",
             jsonapi_create!("user", {
                 "email": "test@example.com",
+            }),
+        )
+        .await
+        .assert_status(400);
+}
+
+#[tokio::test]
+async fn post_returns_422_when_password_is_shorter_than_8_characters() {
+    TestApp::new()
+        .await
+        .post_v1_json(
+            "users",
+            jsonapi_create!("user", {
+                "email": "test@example.com",
+                "password": "1234567"
             }),
         )
         .await

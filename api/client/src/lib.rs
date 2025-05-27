@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use secrecy::{ExposeSecret, SecretString};
+
+#[derive(Debug, Clone)]
 pub struct ApiClient {
     http_client: reqwest::Client,
     base_url: String,
@@ -7,18 +9,18 @@ pub struct ApiClient {
 
 impl ApiClient {
     pub fn secure(base_url: &str) -> Self {
-        Self {
-            http_client: reqwest::Client::default(),
-            base_url: base_url.to_string(),
-            protocol: "https".to_string(),
-        }
+        Self::new(base_url, "https")
     }
 
     pub fn insecure(base_url: &str) -> Self {
+        Self::new(base_url, "http")
+    }
+
+    fn new(base_url: &str, protocol: &str) -> Self {
         Self {
             http_client: reqwest::Client::default(),
             base_url: base_url.to_string(),
-            protocol: "http".to_string(),
+            protocol: protocol.to_string(),
         }
     }
 
@@ -26,24 +28,34 @@ impl ApiClient {
         todo!()
     }
 
+    #[tracing::instrument(skip(self), err)]
     pub async fn create_user(
         &self,
         email: &str,
-        password: &str,
-    ) -> Result<reqwest::Response, reqwest::Error> {
-        self.http_client
+        password: &SecretString,
+    ) -> Result<(), ApiClientError> {
+        Ok(self
+            .http_client
             .post(format!("{}:{}/api/v1/users", self.protocol, self.base_url))
             .json(&serde_json::json!({
                 "data": {
                     "type": "users",
                     "attributes": {
                         "email": email,
-                        "password": password
+                        "password": password.expose_secret()
                     }
                 }
             }))
             .send()
             .await?
             .error_for_status()
+            .map(|_| {})?)
     }
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("The API client had an error!")]
+pub enum ApiClientError {
+    #[error(transparent)]
+    ReqwestError(#[from] reqwest::Error),
 }
