@@ -1,5 +1,16 @@
 use secrecy::{ExposeSecret, SecretString};
 
+macro_rules! jsonapi_create {
+    ($t:literal, $a:tt) => {
+        ::serde_json::json!({
+            "data": {
+                "type": $t,
+                "attributes": $a
+            }
+        })
+    };
+}
+
 #[derive(Debug, Clone)]
 pub struct ApiClient {
     http_client: reqwest::Client,
@@ -37,15 +48,7 @@ impl ApiClient {
         Ok(self
             .http_client
             .post(format!("{}:{}/api/v1/users", self.protocol, self.base_url))
-            .json(&serde_json::json!({
-                "data": {
-                    "type": "users",
-                    "attributes": {
-                        "email": email,
-                        "password": password.expose_secret()
-                    }
-                }
-            }))
+            .json(&jsonapi_create!("users", {"email": email, "password": password.expose_secret()}))
             .send()
             .await?
             .error_for_status()

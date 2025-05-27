@@ -148,6 +148,7 @@ name = "api-server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "api-client",
  "axum",
  "entity",
  "hex",
