@@ -15,9 +15,13 @@ pub fn SignupForm() -> View {
     let status = create_signal(SubmitStatus::None);
 
     let on_submit = move |event: SubmitEvent| {
-        debug!("Submit button was clicked");
         event.prevent_default();
         let api_client = api_client.clone();
+
+        if status.get() == SubmitStatus::Pending {
+            debug!("Submission already in progress, aborting this submit");
+            return;
+        }
 
         status.set(SubmitStatus::Pending);
         sycamore::futures::spawn_local(async move {
@@ -29,6 +33,14 @@ pub fn SignupForm() -> View {
                 SubmitStatus::Failure
             });
         });
+    };
+
+    let button_text = move || {
+        if let SubmitStatus::Pending = status.get() {
+            view! { "..." }
+        } else {
+            view! { "Create Account" }
+        }
     };
 
     form()
@@ -43,18 +55,14 @@ pub fn SignupForm() -> View {
                 input().r#type("password").bind(value, form_.password),
             )),
             div().children((
-                Button(
-                    Button_Props::builder()
-                        .children(move || {
-                            if let SubmitStatus::Pending = status.get() {
-                                view! { "..." }
-                            } else {
-                                view! { "Create Account" }
-                            }
-                        })
-                        .disabled(move || !form_.is_valid.get())
-                        .build(),
-                ),
+                move || {
+                    Button(
+                        Button_Props::builder()
+                            .children(button_text)
+                            .disabled(move || !form_.is_valid.get())
+                            .build(),
+                    )
+                },
                 move || match status.get() {
                     SubmitStatus::None => None,
                     SubmitStatus::Pending => None,
@@ -104,7 +112,7 @@ impl Form {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 enum SubmitStatus {
     None,
     Pending,

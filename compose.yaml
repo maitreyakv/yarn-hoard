@@ -1,18 +1,18 @@
 services:
-  site:
-    build:
-      context: .
-      target: base 
-    command: trunk serve --config=site/Trunk.toml --address=0.0.0.0
-    ports:
-      - 8080:8080
-    environment:
-      API_URL: "localhost:3000"
-    develop:
-      watch:
-        - action: sync+restart
-          path: .
-          target: /app
+  # site:
+  #   build:
+  #     context: .
+  #     target: base 
+  #   command: trunk serve --config=site/Trunk.toml --address=0.0.0.0
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     API_URL: "localhost:3000"
+  #   develop:
+  #     watch:
+  #       - action: sync+restart
+  #         path: .
+  #         target: /app
 
   api-server:
     depends_on:
