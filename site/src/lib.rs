@@ -1,5 +1,6 @@
-pub mod app;
-pub mod organisms;
-pub mod pages;
+mod app;
+mod atoms;
+mod organisms;
+mod pages;
 
 pub use app::App;

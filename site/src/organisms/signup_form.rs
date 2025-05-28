@@ -3,19 +3,31 @@ use sycamore::prelude::*;
 use sycamore::web::bind::value;
 use sycamore::web::events::{SubmitEvent, submit};
 use sycamore::web::tags::*;
+use tracing::{debug, error, info};
+
+use crate::atoms::{Button, Button_Props};
 
 #[component]
 #[tracing::instrument()]
 pub fn SignupForm() -> View {
     let api_client = use_context::<api_client::ApiClient>();
-    let submit_was_success: Signal<Option<bool>> = create_signal(None);
     let form_ = Form::new();
+    let status = create_signal(SubmitStatus::None);
 
     let on_submit = move |event: SubmitEvent| {
+        debug!("Submit button was clicked");
         event.prevent_default();
         let api_client = api_client.clone();
+
+        status.set(SubmitStatus::Pending);
         sycamore::futures::spawn_local(async move {
-            submit_was_success.set(Some(form_.submit(api_client).await.is_ok()));
+            status.set(if form_.submit(api_client).await.is_ok() {
+                info!("Submit was successful");
+                SubmitStatus::Success
+            } else {
+                error!("Submit failed!");
+                SubmitStatus::Failure
+            });
         });
     };
 
@@ -31,13 +43,23 @@ pub fn SignupForm() -> View {
                 input().r#type("password").bind(value, form_.password),
             )),
             div().children((
-                button()
-                    .disabled(move || !form_.is_valid.get())
-                    .children("Create Account"),
-                move || match submit_was_success.get() {
-                    Some(true) => Some("Success!".into()),
-                    Some(false) => Some("Failure!".into()),
-                    None => None,
+                Button(
+                    Button_Props::builder()
+                        .children(move || {
+                            if let SubmitStatus::Pending = status.get() {
+                                view! { "..." }
+                            } else {
+                                view! { "Create Account" }
+                            }
+                        })
+                        .disabled(move || !form_.is_valid.get())
+                        .build(),
+                ),
+                move || match status.get() {
+                    SubmitStatus::None => None,
+                    SubmitStatus::Pending => None,
+                    SubmitStatus::Success => Some("Success!".into()),
+                    SubmitStatus::Failure => Some("Failure!".into()),
                 },
             )),
         ))
@@ -80,4 +102,12 @@ impl Form {
         let password = SecretString::new(self.password.get_clone().into());
         api_client.create_user(&email, &password).await
     }
+}
+
+#[derive(Clone, Copy)]
+enum SubmitStatus {
+    None,
+    Pending,
+    Success,
+    Failure,
 }
