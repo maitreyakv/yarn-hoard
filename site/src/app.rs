@@ -1,6 +1,5 @@
 use sycamore::prelude::*;
-use sycamore::web::tags::*;
-use sycamore_router::{HistoryIntegration, Route, Router, RouterProps};
+use sycamore_router::{HistoryIntegration, Route, Router};
 
 use crate::pages::{LandingPage, LoginPage, SignupPage};
 
@@ -27,17 +26,21 @@ pub fn App() -> View {
         }
     });
 
-    Router(RouterProps::new(
-        HistoryIntegration::new(),
-        |route: ReadSignal<AppRoutes>| {
-            div()
-                .children(move || match route.get_clone() {
-                    AppRoutes::Landing => LandingPage(),
-                    AppRoutes::Signup => SignupPage(),
-                    AppRoutes::Login => LoginPage(),
-                    AppRoutes::NotFound => "404 Not Found".into(),
-                })
-                .into()
-        },
-    ))
+    view! {
+        Router(
+            integration=HistoryIntegration::new(),
+            view=|route: ReadSignal<AppRoutes>| {
+                view! {
+                    div {
+                        (match route.get_clone() {
+                            AppRoutes::Landing => LandingPage(),
+                            AppRoutes::Signup => SignupPage(),
+                            AppRoutes::Login => LoginPage(),
+                            AppRoutes::NotFound => "404 Not Found".into(),
+                        })
+                    }
+                }
+            }
+        )
+    }
 }

@@ -1,17 +1,16 @@
 use secrecy::SecretString;
 use sycamore::prelude::*;
-use sycamore::web::bind::value;
-use sycamore::web::events::{SubmitEvent, submit};
-use sycamore::web::tags::*;
+use sycamore::web::events::SubmitEvent;
 use tracing::{debug, error, info};
 
-use crate::atoms::{Button, Button_Props};
+use crate::atoms::Button;
+use crate::molecules::{EmailInput, PasswordInput};
 
 #[component]
 #[tracing::instrument()]
 pub fn SignupForm() -> View {
     let api_client = use_context::<api_client::ApiClient>();
-    let form_ = Form::new();
+    let form = Form::new();
     let status = create_signal(SubmitStatus::None);
 
     let on_submit = move |event: SubmitEvent| {
@@ -23,55 +22,34 @@ pub fn SignupForm() -> View {
             return;
         }
 
-        status.set(SubmitStatus::Pending);
         sycamore::futures::spawn_local(async move {
-            status.set(if form_.submit(api_client).await.is_ok() {
+            status.set(SubmitStatus::Pending);
+            let result = form.submit(api_client).await;
+            if result.is_ok() {
                 info!("Submit was successful");
-                SubmitStatus::Success
+                status.set(SubmitStatus::Success);
             } else {
                 error!("Submit failed!");
-                SubmitStatus::Failure
-            });
+                status.set(SubmitStatus::Failure);
+            };
         });
     };
 
-    let button_text = move || {
-        if let SubmitStatus::Pending = status.get() {
-            view! { "..." }
-        } else {
-            view! { "Create Account" }
-        }
+    let status_text = move || match status.get() {
+        SubmitStatus::None => "Ready!",
+        SubmitStatus::Pending => "Pending...",
+        SubmitStatus::Success => "Success!",
+        SubmitStatus::Failure => "Failure!",
     };
 
-    form()
-        .on(submit, on_submit)
-        .children((
-            div().children((
-                label().children("Email"),
-                input().r#type("email").bind(value, form_.email),
-            )),
-            div().children((
-                label().children("Password"),
-                input().r#type("password").bind(value, form_.password),
-            )),
-            div().children((
-                move || {
-                    Button(
-                        Button_Props::builder()
-                            .children(button_text)
-                            .disabled(move || !form_.is_valid.get())
-                            .build(),
-                    )
-                },
-                move || match status.get() {
-                    SubmitStatus::None => None,
-                    SubmitStatus::Pending => None,
-                    SubmitStatus::Success => Some("Success!".into()),
-                    SubmitStatus::Failure => Some("Failure!".into()),
-                },
-            )),
-        ))
-        .into()
+    view! {
+        form(on:submit=on_submit) {
+            EmailInput(bind=form.email)
+            PasswordInput(bind=form.password)
+            Button(disabled=move || !form.is_valid.get()) { "Create Account" }
+            (status_text)
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

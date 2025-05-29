@@ -11,9 +11,6 @@ pub async fn create_user(
     State(db): State<DatabaseConnection>,
     json: JsonApiCreate<UserCreate>,
 ) -> Result<(), AppError> {
-    // TEMP
-    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
-
     db.transaction::<_, (), sea_orm::DbErr>(|txn| {
         Box::pin(async move {
             let user = users::ActiveModel::from(json.into_inner())
