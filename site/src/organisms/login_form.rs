@@ -1,33 +1,22 @@
 use sycamore::prelude::*;
-use sycamore::web::bind::value;
-use sycamore::web::events::{SubmitEvent, submit};
-use sycamore::web::tags::*;
+use sycamore::web::events::SubmitEvent;
+
+use crate::molecules::{EmailInput, PasswordInput};
 
 #[component]
 pub fn LoginForm() -> View {
     let email = create_signal(String::new());
     let password = create_signal(String::new());
 
-    let on_submit = move |event: SubmitEvent| {
+    let handle_submit = move |event: SubmitEvent| {
         event.prevent_default();
         console_log!("email={email}, password={password}");
     };
 
-    form()
-        .on(submit, on_submit)
-        .children((
-            div().children(
-                input()
-                    .r#type("email")
-                    .placeholder("Email")
-                    .bind(value, email),
-            ),
-            div().children(
-                input()
-                    .r#type("password")
-                    .placeholder("Password")
-                    .bind(value, password),
-            ),
-        ))
-        .into()
+    view! {
+        form(on:submit=handle_submit) {
+            EmailInput(bind=email)
+            PasswordInput(bind=password)
+        }
+    }
 }

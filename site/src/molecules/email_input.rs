@@ -4,8 +4,12 @@ use sycamore::prelude::*;
 pub fn EmailInput(#[prop(setter(into))] bind: Signal<String>) -> View {
     view! {
         div {
-            label { "Email" }
-            input(class="input", r#type="email", bind:value=bind)
+            div {
+                label { "Email" }
+            }
+            div {
+                input(class="input", r#type="email", bind:value=bind)
+            }
         }
     }
 }

@@ -4,8 +4,12 @@ use sycamore::prelude::*;
 pub fn PasswordInput(#[prop(setter(into))] bind: Signal<String>) -> View {
     view! {
         div {
-            label { "Password" }
-            input(class="input", r#type="password", bind:value=bind)
+            div {
+                label { "Password" }
+            }
+            div {
+                input(class="input", r#type="password", bind:value=bind)
+            }
         }
     }
 }

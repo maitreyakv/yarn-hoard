@@ -1,13 +1,20 @@
 use sycamore::prelude::*;
 
+use crate::atoms::{Card, CardContent, CardFooter, CardHeader, CardTitle};
 use crate::organisms::SignupForm;
 
 #[component]
 pub fn SignupPage() -> View {
     view! {
-        div {
-            SignupForm()
-            span {
+        Card {
+            CardHeader {
+                CardTitle(text="Sign up for an account")
+                "Enter your email and create a password"
+            }
+            CardContent {
+                SignupForm()
+            }
+            CardFooter {
                 "Already a user? "
                 a(href="/login") { "Login" }
             }

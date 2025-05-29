@@ -57,7 +57,6 @@ impl ApiClient {
 }
 
 #[derive(Debug, thiserror::Error)]
-#[error("The API client had an error!")]
 pub enum ApiClientError {
     #[error(transparent)]
     ReqwestError(#[from] reqwest::Error),

@@ -13,25 +13,32 @@ pub fn SignupForm() -> View {
     let form = Form::new();
     let status = create_signal(SubmitStatus::None);
 
-    let on_submit = move |event: SubmitEvent| {
+    let handle_submit = move |event: SubmitEvent| {
         event.prevent_default();
-        let api_client = api_client.clone();
 
         if status.get() == SubmitStatus::Pending {
             debug!("Submission already in progress, aborting this submit");
             return;
         }
 
-        sycamore::futures::spawn_local(async move {
-            status.set(SubmitStatus::Pending);
-            let result = form.submit(api_client).await;
-            if result.is_ok() {
-                info!("Submit was successful");
-                status.set(SubmitStatus::Success);
-            } else {
-                error!("Submit failed!");
-                status.set(SubmitStatus::Failure);
-            };
+        if !form.is_valid.get() {
+            debug!("Form is not valid, aborting this submit");
+            return;
+        }
+
+        sycamore::futures::spawn_local({
+            let api_client = api_client.clone();
+            async move {
+                status.set(SubmitStatus::Pending);
+                let result = form.submit(api_client).await;
+                if result.is_ok() {
+                    info!("Submit was successful");
+                    status.set(SubmitStatus::Success);
+                } else {
+                    error!("Submit failed!");
+                    status.set(SubmitStatus::Failure);
+                };
+            }
         });
     };
 
@@ -43,10 +50,10 @@ pub fn SignupForm() -> View {
     };
 
     view! {
-        form(on:submit=on_submit) {
+        form(on:submit=handle_submit) {
             EmailInput(bind=form.email)
             PasswordInput(bind=form.password)
-            Button(disabled=move || !form.is_valid.get()) { "Create Account" }
+            Button { "Create Account" }
             (status_text)
         }
     }

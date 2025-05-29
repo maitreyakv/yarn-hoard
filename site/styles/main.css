@@ -1,6 +1,7 @@
 :root {
   --primary: #a985ff;
   --secondary: #eee6fe;
+  font-size: 1em;
 }
 
 * {
@@ -18,7 +19,8 @@
   text-align: center;
   color: black;
   border: 2px solid black;
-  border-radius: 10px;
+  border-radius: 6px;
+  margin: 10px;
 }
 
 .button:disabled {
@@ -67,5 +69,29 @@
 .input {
   border: 2px solid black;
   border-radius: 6px;
-  padding: 0.5em;
+  padding: 5px;
+}
+
+.card {
+  background-color: var(--secondary);
+  border: 2px solid black;
+  border-radius: 6px;
+  box-shadow: 4px 4px;
+}
+
+.card-header {
+  margin: 20px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.card-content {
+  margin: 20px;
+}
+
+.card-footer {
+  margin: 20px;
 }
