@@ -3,13 +3,14 @@ use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
 use tracing::{debug, error, info};
 
-use crate::atoms::Button;
-use crate::molecules::{EmailInput, PasswordInput};
+use crate::api::{ApiClient, ApiClientError};
+use crate::frontend::atoms::Button;
+use crate::frontend::molecules::{EmailInput, PasswordInput};
 
 #[component]
 #[tracing::instrument()]
 pub fn SignupForm() -> View {
-    let api_client = use_context::<api_client::ApiClient>();
+    let api_client = use_context::<ApiClient>();
     let form = Form::new();
     let status = create_signal(SubmitStatus::None);
 
@@ -87,10 +88,7 @@ impl Form {
     }
 
     #[tracing::instrument(skip_all, err)]
-    async fn submit(
-        self,
-        api_client: api_client::ApiClient,
-    ) -> Result<(), api_client::ApiClientError> {
+    async fn submit(self, api_client: ApiClient) -> Result<(), ApiClientError> {
         let email = self.email.get_clone();
         let password = SecretString::new(self.password.get_clone().into());
         api_client.create_user(&email, &password).await

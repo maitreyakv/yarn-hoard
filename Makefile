@@ -9,7 +9,7 @@ all:
 clean:
 	docker compose down
 	cargo clean
-	trunk clean --config=site/Trunk.toml
+	trunk clean
 
 lint:
 	cargo $(CARGO_FMT_CMD)

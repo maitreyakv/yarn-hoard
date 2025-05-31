@@ -1,7 +1,8 @@
 use sycamore::prelude::*;
 use sycamore_router::{HistoryIntegration, Route, Router};
 
-use crate::pages::{LandingPage, LoginPage, SignupPage};
+use crate::api::ApiClient;
+use crate::frontend::pages::{LandingPage, LoginPage, SignupPage};
 
 #[derive(Route, Clone)]
 enum AppRoutes {
@@ -20,9 +21,9 @@ pub fn App() -> View {
     provide_context({
         let api_url = std::env!("API_URL");
         if api_url.contains("localhost") {
-            api_client::ApiClient::insecure(api_url)
+            ApiClient::insecure(api_url)
         } else {
-            api_client::ApiClient::secure(api_url)
+            ApiClient::secure(api_url)
         }
     });
 

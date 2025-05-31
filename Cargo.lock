@@ -133,41 +133,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
 
 [[package]]
-name = "api-client"
-version = "0.1.0"
-dependencies = [
- "reqwest",
- "secrecy",
- "serde_json",
- "thiserror",
- "tracing",
-]
-
-[[package]]
-name = "api-server"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "api-client",
- "axum",
- "entity",
- "hex",
- "migration",
- "openssl",
- "reqwest",
- "sea-orm",
- "secrecy",
- "serde",
- "serde_json",
- "testcontainers-modules",
- "thiserror",
- "tokio",
- "tower-http",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3019,19 +2984,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3a9fe34e3e7a50316060351f37187a3f546bce95496156754b601a5fa71b76e"
 
 [[package]]
-name = "site"
-version = "0.1.0"
-dependencies = [
- "api-client",
- "console_error_panic_hook",
- "secrecy",
- "sycamore",
- "sycamore-router",
- "tracing",
- "tracing-wasm",
-]
-
-[[package]]
 name = "slab"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4523,6 +4475,33 @@ name = "yansi"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
+
+[[package]]
+name = "yarn-hoard"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "console_error_panic_hook",
+ "entity",
+ "hex",
+ "migration",
+ "openssl",
+ "reqwest",
+ "sea-orm",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "sycamore",
+ "sycamore-router",
+ "testcontainers-modules",
+ "thiserror",
+ "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-wasm",
+]
 
 [[package]]
 name = "yoke"

@@ -5,11 +5,11 @@ use testcontainers_modules::{
     testcontainers::{ContainerAsync, runners::AsyncRunner},
 };
 
-use api_client::ApiClient;
+use yarn_hoard::api::ApiClient;
 
 pub struct TestApp {
     _close_tx: tokio::sync::oneshot::Sender<()>,
-    pub api_client: api_client::ApiClient,
+    pub api_client: yarn_hoard::api::ApiClient,
     _db_container: ContainerAsync<Postgres>,
     db: DatabaseConnection,
 }
@@ -23,7 +23,7 @@ impl TestApp {
             container.get_host_port_ipv4(5432).await.unwrap(),
         );
 
-        let app = api_server::build_app(api_server::AppConfig {
+        let app = yarn_hoard::api::build_app(yarn_hoard::api::AppConfig {
             database_url: db_url.to_owned().into(),
         })
         .await

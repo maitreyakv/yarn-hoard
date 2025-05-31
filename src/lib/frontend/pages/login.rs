@@ -1,6 +1,6 @@
 use sycamore::prelude::*;
 
-use crate::organisms::LoginForm;
+use crate::frontend::organisms::LoginForm;
 
 #[component]
 pub fn LoginPage() -> View {

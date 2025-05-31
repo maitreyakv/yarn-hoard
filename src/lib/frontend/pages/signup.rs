@@ -1,7 +1,7 @@
 use sycamore::prelude::*;
 
-use crate::atoms::{Card, CardContent, CardFooter, CardHeader, CardTitle};
-use crate::organisms::SignupForm;
+use crate::frontend::atoms::{Card, CardContent, CardFooter, CardHeader, CardTitle};
+use crate::frontend::organisms::SignupForm;
 
 #[component]
 pub fn SignupPage() -> View {
