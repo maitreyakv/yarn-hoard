@@ -1,49 +1,44 @@
-//use entity::{confirmations, users};
-//use sea_orm::EntityTrait;
-//
-//use crate::helpers::TestApp;
+use entity::{confirmations, users};
+use sea_orm::EntityTrait;
 
-#[tokio::test]
-async fn put_returns_200_when_ok() {
-    //let app = TestApp::new().await.with_unactivated_user().await;
-    //let confirmation_token = app
-    //    .find_exactly_one(confirmations::Entity::find())
-    //    .await
-    //    .token;
-    //app.put_v1(&format!("confirm/{confirmation_token}"))
-    //    .await
-    //    .assert_status(200);
-    todo!()
-}
+use axum::http::StatusCode;
+use frontend::ApiClientError;
+
+use crate::helpers::TestApp;
 
 #[tokio::test]
 async fn put_returns_404_with_no_matching_token() {
-    //let app = TestApp::new().await;
-    //app.put_v1("confirm/missingToken").await.assert_status(404);
-    todo!()
+    let app = TestApp::new().await;
+    let error = app
+        .api_client
+        .confirm_user_creation("missingToken")
+        .await
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        ApiClientError::ErrorStatusCode(StatusCode::NOT_FOUND)
+    ));
 }
 
 #[tokio::test]
 async fn put_activates_user_when_ok() {
-    //let app = TestApp::new().await.with_unactivated_user().await;
-    //let confirmation_token = app
-    //    .find_exactly_one(confirmations::Entity::find())
-    //    .await
-    //    .token;
-    //app.put_v1(&format!("confirm/{confirmation_token}")).await;
-    //let user = app.find_exactly_one(users::Entity::find()).await;
-    //assert!(user.is_activated);
-    todo!()
+    let app = TestApp::new().await.with_unactivated_user().await;
+    let token = app
+        .find_exactly_one(confirmations::Entity::find())
+        .await
+        .token;
+    app.api_client.confirm_user_creation(&token).await.unwrap();
+    let user = app.find_exactly_one(users::Entity::find()).await;
+    assert!(user.is_activated);
 }
 
 #[tokio::test]
 async fn put_deletes_confirmation_when_ok() {
-    //let app = TestApp::new().await.with_unactivated_user().await;
-    //let confirmation_token = app
-    //    .find_exactly_one(confirmations::Entity::find())
-    //    .await
-    //    .token;
-    //app.put_v1(&format!("confirm/{confirmation_token}")).await;
-    //app.assert_found_none(confirmations::Entity::find()).await;
-    todo!()
+    let app = TestApp::new().await.with_unactivated_user().await;
+    let token = app
+        .find_exactly_one(confirmations::Entity::find())
+        .await
+        .token;
+    app.api_client.confirm_user_creation(&token).await.unwrap();
+    app.assert_found_none(confirmations::Entity::find()).await;
 }

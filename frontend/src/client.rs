@@ -56,6 +56,21 @@ impl ApiClient {
             .map(|_| ())
             .map_err(|e| ApiClientError::ErrorStatusCode(e.status().unwrap()))
     }
+
+    #[tracing::instrument(skip(self), err)]
+    pub async fn confirm_user_creation(&self, token: &str) -> Result<(), ApiClientError> {
+        self.http_client
+            .put(format!(
+                "{}:{}/api/v1/users/confirm/{}",
+                self.protocol, self.base_url, token
+            ))
+            .send()
+            .await
+            .map_err(ApiClientError::SendFailure)?
+            .error_for_status()
+            .map(|_| ())
+            .map_err(|e| ApiClientError::ErrorStatusCode(e.status().unwrap()))
+    }
 }
 
 #[derive(Debug, thiserror::Error)]

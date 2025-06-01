@@ -1,10 +1,14 @@
+use axum::extract::Path;
 use axum::extract::State;
 use axum::http::StatusCode;
 use entity::{confirmations, users};
-use sea_orm::prelude::*;
-use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set, TransactionTrait};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
+    TransactionTrait,
+};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
+use tracing::error;
 
 use crate::app::AppError;
 use crate::jsonapi::JsonApiCreate;
@@ -43,6 +47,42 @@ pub async fn create_user(
 
             // TODO: Send email
             // ...and finally send the confirmation email with the token.
+
+            Ok(())
+        })
+    })
+    .await?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn confirm_user_creation(
+    State(db): State<DatabaseConnection>,
+    Path(token): Path<String>,
+) -> Result<StatusCode, AppError> {
+    // Find the User and Confirmation records
+    let (confirmation, user) = confirmations::Entity::find()
+        .filter(confirmations::Column::Token.eq(token))
+        .find_also_related(users::Entity)
+        .one(&db)
+        .await?
+        .ok_or(StatusCode::NOT_FOUND)?;
+    let user = user.ok_or_else(|| {
+        error!(?confirmation, "Confirmation has no user!");
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    // Start a transaction and...
+    db.transaction::<_, (), sea_orm::DbErr>(|txn| {
+        Box::pin(async move {
+            // ...first set the user as active...
+            let mut user: users::ActiveModel = user.into();
+            user.is_activated = Set(true);
+            user.save(txn).await?;
+
+            // ...finally delete the confirmation token record.
+            let confirmation: confirmations::ActiveModel = confirmation.into();
+            confirmation.delete(txn).await?;
 
             Ok(())
         })

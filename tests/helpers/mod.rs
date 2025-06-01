@@ -70,8 +70,8 @@ impl TestApp {
         rows.into_iter().next().unwrap()
     }
 
-    //pub async fn assert_found_none<E: EntityTrait>(&self, select: Select<E>) {
-    //    let rows = select.all(&self.db).await.unwrap();
-    //    assert!(rows.len().eq(&0));
-    //}
+    pub async fn assert_found_none<E: EntityTrait>(&self, select: Select<E>) {
+        let rows = select.all(&self.db).await.unwrap();
+        assert!(rows.len().eq(&0));
+    }
 }

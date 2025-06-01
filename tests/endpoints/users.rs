@@ -77,7 +77,7 @@ async fn create_returns_err_when_password_is_shorter_than_8_characters() {
     let error = TestApp::new()
         .await
         .api_client
-        .create_user("test@example.com", &SecretString::new("1234567".into()))
+        .create_user("test@example.com", &SecretString::new("somePas".into()))
         .await
         .unwrap_err();
     assert!(matches!(

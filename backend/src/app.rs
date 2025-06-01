@@ -10,7 +10,10 @@ use secrecy::SecretString;
 
 use crate::{
     database::connect_to_db_and_run_migrations,
-    endpoints::{confirm::confirm, health_check::health_check, users::create_user},
+    endpoints::{
+        health_check::health_check,
+        users::{confirm_user_creation, create_user},
+    },
 };
 
 /// Build the Axum application for the API.
@@ -26,7 +29,7 @@ pub async fn build_app(config: AppConfig) -> anyhow::Result<Router> {
                 Router::new()
                     .route("/health", get(health_check))
                     .route("/users", post(create_user))
-                    .route("/confirm/{token}", put(confirm)),
+                    .route("/users/confirm/{token}", put(confirm_user_creation)),
             ),
         )
         .with_state(AppState { db })
