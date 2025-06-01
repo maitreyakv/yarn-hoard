@@ -1,3 +1,5 @@
+use std::sync::Once;
+
 use secrecy::SecretString;
 use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
@@ -5,11 +7,18 @@ use tracing::{debug, error, info};
 
 use crate::atoms::Button;
 use crate::molecules::{EmailInput, PasswordInput};
+use crate::util::inject_style_tag_into_document_head;
 use crate::{ApiClient, ApiClientError};
+
+static INJECT_STYLE: Once = Once::new();
 
 #[component]
 #[tracing::instrument()]
 pub fn SignupForm() -> View {
+    INJECT_STYLE.call_once(|| {
+        inject_style_tag_into_document_head(include_str!("signup_form.css"));
+    });
+
     let api_client = use_context::<ApiClient>();
     let form = Form::new();
     let status = create_signal(SubmitStatus::None);

@@ -10,7 +10,6 @@ pub fn LoginForm() -> View {
 
     let handle_submit = move |event: SubmitEvent| {
         event.prevent_default();
-        console_log!("email={email}, password={password}");
     };
 
     view! {

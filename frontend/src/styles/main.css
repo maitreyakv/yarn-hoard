@@ -32,6 +32,7 @@ html, body {
   font-weight: 600;
 }
 
+
 #signup-page {
   background-color: var(--primary);
   display: grid;
