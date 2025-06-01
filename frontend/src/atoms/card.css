@@ -1,0 +1,26 @@
+
+.card {
+  background-color: var(--secondary);
+  border: 2px solid black;
+  border-radius: 6px;
+  box-shadow: 4px 4px;
+}
+
+.card-header {
+  display: grid;
+  gap: 4px;
+  margin: 24px;
+}
+
+.card-title {
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.card-content {
+  margin: 24px;
+}
+
+.card-footer {
+  margin: 24px;
+}

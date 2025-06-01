@@ -1,0 +1,19 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+reqwest = { version = "0.12.15", features = ["json"] }
+secrecy = { workspace = true }
+serde_json = { workspace = true }
+sycamore = { version = "0.9.1", features = ["suspense"] }
+sycamore-router = "0.9.1"
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-wasm = "0.2.1"
+web-sys = { version = "0.3.77", features = ["Document", "HtmlHeadElement"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(sycamore_force_ssr)"] }

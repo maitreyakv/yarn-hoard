@@ -4,8 +4,8 @@ use sea_orm::{ActiveModelTrait, DatabaseConnection, Set, TransactionTrait};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
 
-use crate::api::app::AppError;
-use crate::api::jsonapi::JsonApiCreate;
+use crate::app::AppError;
+use crate::jsonapi::JsonApiCreate;
 
 pub async fn create_user(
     State(db): State<DatabaseConnection>,
@@ -43,8 +43,8 @@ pub(crate) struct UserCreate {
 
 impl From<UserCreate> for users::ActiveModel {
     fn from(user: UserCreate) -> Self {
-        let salt = crate::api::auth::generate_salt();
-        let hashed_password = crate::api::auth::hash_password(&user.password, &salt);
+        let salt = crate::auth::generate_salt();
+        let hashed_password = crate::auth::hash_password(&user.password, &salt);
         users::ActiveModel {
             email: Set(user.email.to_owned()),
             hashed_password: Set(hashed_password.expose_secret().to_owned()),

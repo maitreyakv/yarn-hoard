@@ -22,7 +22,7 @@ services:
     build: 
       context: .
       target: base
-    command: cargo run --bin backend --features=backend
+    command: cargo run --package=backend
     ports:
       - 3000:3000
     environment:

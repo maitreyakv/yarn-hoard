@@ -1,7 +1,7 @@
 use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
 
-use crate::frontend::molecules::{EmailInput, PasswordInput};
+use crate::molecules::{EmailInput, PasswordInput};
 
 #[component]
 pub fn LoginForm() -> View {

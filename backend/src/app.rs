@@ -9,8 +9,8 @@ use sea_orm::{DatabaseConnection, DbErr, TransactionError};
 use secrecy::SecretString;
 
 use crate::{
-    api::database::connect_to_db_and_run_migrations,
-    api::endpoints::{confirm::confirm, health_check::health_check, users::create_user},
+    database::connect_to_db_and_run_migrations,
+    endpoints::{confirm::confirm, health_check::health_check, users::create_user},
 };
 
 /// Build the Axum application for the API.

@@ -3,9 +3,9 @@ use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
 use tracing::{debug, error, info};
 
-use crate::frontend::atoms::Button;
-use crate::frontend::molecules::{EmailInput, PasswordInput};
-use crate::frontend::{ApiClient, ApiClientError};
+use crate::atoms::Button;
+use crate::molecules::{EmailInput, PasswordInput};
+use crate::{ApiClient, ApiClientError};
 
 #[component]
 #[tracing::instrument()]

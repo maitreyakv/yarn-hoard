@@ -373,6 +373,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "backend"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "entity",
+ "hex",
+ "migration",
+ "openssl",
+ "sea-orm",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -999,6 +1020,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "frontend"
+version = "0.1.0"
+dependencies = [
+ "console_error_panic_hook",
+ "reqwest",
+ "secrecy",
+ "serde_json",
+ "sycamore",
+ "sycamore-router",
+ "thiserror",
+ "tracing",
+ "tracing-wasm",
+ "web-sys",
 ]
 
 [[package]]
@@ -4480,28 +4517,7 @@ checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
 name = "yarn-hoard"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "axum",
- "console_error_panic_hook",
- "entity",
- "hex",
- "migration",
- "openssl",
- "reqwest",
- "sea-orm",
- "secrecy",
- "serde",
- "serde_json",
- "sycamore",
- "sycamore-router",
  "testcontainers-modules",
- "thiserror",
- "tokio",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "tracing-wasm",
- "web-sys",
 ]
 
 [[package]]

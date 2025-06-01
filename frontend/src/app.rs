@@ -1,8 +1,8 @@
 use sycamore::prelude::*;
 use sycamore_router::{HistoryIntegration, Route, Router};
 
-use crate::frontend::ApiClient;
-use crate::frontend::pages::{LandingPage, LoginPage, SignupPage};
+use crate::ApiClient;
+use crate::pages::{LandingPage, LoginPage, SignupPage};
 
 #[derive(Route, Clone)]
 enum AppRoutes {

@@ -6,7 +6,7 @@ use sea_orm::{
 };
 use tracing::error;
 
-use crate::api::app::AppError;
+use crate::app::AppError;
 
 pub async fn confirm(
     State(db): State<DatabaseConnection>,

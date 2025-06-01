@@ -14,7 +14,6 @@
 html, body {
     margin: 0;
     height: 100%;
-    background-color: var(--primary);
 }
 
 .text-center {
@@ -29,50 +28,12 @@ html, body {
   padding: 12px;
 }
 
-.email-input > div:first-child {
-  margin-bottom: 10px;
-}
-
-.password-input > div:first-child {
-  margin-bottom: 10px;
-}
-
-.signup-form {
-  display: grid;
-  gap: 20px;
-}
-
 .label {
   font-weight: 600;
 }
 
-.card {
-  background-color: var(--secondary);
-  border: 2px solid black;
-  border-radius: 6px;
-  box-shadow: 4px 4px;
-}
-
-.card-header {
-  display: grid;
-  gap: 4px;
-  margin: 24px;
-}
-
-.card-title {
-  font-size: 1.2em;
-  font-weight: 600;
-}
-
-.card-content {
-  margin: 24px;
-}
-
-.card-footer {
-  margin: 24px;
-}
-
 #signup-page {
+  background-color: var(--primary);
   display: grid;
   place-items: center;
   width: 100vw;
