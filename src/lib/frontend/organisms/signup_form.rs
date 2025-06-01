@@ -3,9 +3,9 @@ use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
 use tracing::{debug, error, info};
 
-use crate::api::{ApiClient, ApiClientError};
 use crate::frontend::atoms::Button;
 use crate::frontend::molecules::{EmailInput, PasswordInput};
+use crate::frontend::{ApiClient, ApiClientError};
 
 #[component]
 #[tracing::instrument()]
@@ -43,19 +43,11 @@ pub fn SignupForm() -> View {
         });
     };
 
-    let status_text = move || match status.get() {
-        SubmitStatus::None => "Ready!",
-        SubmitStatus::Pending => "Pending...",
-        SubmitStatus::Success => "Success!",
-        SubmitStatus::Failure => "Failure!",
-    };
-
     view! {
-        form(on:submit=handle_submit) {
+        form(class="signup-form", on:submit=handle_submit) {
             EmailInput(bind=form.email)
             PasswordInput(bind=form.password)
             Button { "Create Account" }
-            (status_text)
         }
     }
 }

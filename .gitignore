@@ -18,8 +18,8 @@ target/
 
 # Added by cargo
 
-/target
+**/target
 
-/data
+**/data
 
-/site/dist
+**/dist

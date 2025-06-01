@@ -1,0 +1,54 @@
+.button {
+  background-color: var(--primary);
+  display: block;
+  padding: 12px 20px;
+  cursor: pointer;
+  text-align: center;
+  color: black;
+  border: 2px solid black;
+  border-radius: 6px;
+  width: 100%;
+}
+
+.button:disabled {
+  box-shadow: 4px 4px;
+  background-color: lightgrey;
+  cursor: not-allowed
+}
+
+
+.button:active:not(:disabled) {
+  box-shadow: 0px 0px;
+  animation-name: click;
+  animation-duration: 0.1s;
+  animation-fill-mode: both;
+}
+
+.button:not(:active):not(:disabled) {
+  box-shadow: 4px 4px;
+  animation-name: unclick;
+  animation-duration: 0.1s;
+  animation-fill-mode: both;
+}
+
+@keyframes click {
+  from {
+  	transform: translateY(0px) translateX(0px);
+    box-shadow: 4px 4px;
+  }
+  to {
+    transform: translateY(4px) translateX(4px);
+    box-shadow: 0px 0px;
+  }
+}
+
+@keyframes unclick {
+  from {
+    transform: translateY(4px) translateX(4px);
+    box-shadow: 0px 0px;
+  }
+  to {
+  	transform: translateY(0px) translateX(0px);
+    box-shadow: 4px 4px;
+  }
+}

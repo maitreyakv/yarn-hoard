@@ -4501,6 +4501,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "tracing-wasm",
+ "web-sys",
 ]
 
 [[package]]

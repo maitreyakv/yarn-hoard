@@ -5,19 +5,41 @@ edition = "2024"
 
 [workspace]
 resolver = "1"
-members = [ "entity", "migration"]
+members = [ "entity", "migration" ]
 
 [[bin]]
 name = "frontend"
 path = "src/bin/frontend.rs"
+required-features = ["frontend"]
 
 [[bin]]
 name = "backend"
 path = "src/bin/backend.rs"
+required-features = ["backend"]
 
 [lib]
 name = "yarn_hoard"
 path = "src/lib/lib.rs"
+
+[features]
+frontend = [
+  "dep:console_error_panic_hook",
+  "dep:reqwest",
+  "dep:sycamore",
+  "dep:sycamore-router",
+  "dep:tracing-wasm",
+  "dep:web-sys",
+]
+backend = [
+  "dep:anyhow",
+  "dep:axum",
+  "dep:hex",
+  "dep:openssl",
+  "dep:sea-orm",
+  "dep:tokio",
+  "dep:tower-http",
+  "dep:tracing-subscriber",
+]
 
 [dependencies]
 # Internal
@@ -25,24 +47,29 @@ entity = { path = "./entity" }
 migration = { path = "./migration" }
 
 # External
-anyhow = "1.0.97"
-axum = "0.8.1"
-console_error_panic_hook = "0.1.7"
-hex = "0.4.3"
-openssl = { version = "0.10.71", features = [ "vendored" ] }
-reqwest = { version = "0.12.15", features = ["json"] }
-sea-orm = { version = "1.1.7", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = "1.0.219"
 serde_json = "1.0.140"
-sycamore = { version = "0.9.1", features = ["suspense"] }
-sycamore-router = "0.9.1"
 thiserror = "2.0.12"
-tokio = { version = "1.44.1" }
-tower-http = { version = "0.6.2", features = ["trace", "cors"] }
-tracing-wasm = "0.2.1"
 tracing = "0.1.41"
-tracing-subscriber = "0.3.19"
+
+# [features.frontend]
+console_error_panic_hook = { version = "0.1.7", optional = true }
+reqwest = { version = "0.12.15", features = ["json"], optional = true }
+sycamore = { version = "0.9.1", features = ["suspense"], optional = true }
+sycamore-router = { version = "0.9.1", optional = true }
+tracing-wasm = { version = "0.2.1", optional = true }
+web-sys = { version = "0.3.77", features = ["Document", "HtmlHeadElement"], optional = true }
+
+# [features.backend]
+anyhow = { version = "1.0.97", optional = true }
+axum = { version = "0.8.1", optional = true }
+hex = { version = "0.4.3", optional = true }
+openssl = { version = "0.10.71", features = [ "vendored" ], optional = true }
+sea-orm = { version = "1.1.7", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"], optional = true }
+tokio = { version = "1.44.1" , optional = true }
+tower-http = { version = "0.6.2", features = ["trace", "cors"] , optional = true }
+tracing-subscriber = { version = "0.3.19", optional = true }
 
 [dev-dependencies]
 testcontainers-modules = { version = "0.11.6", features = ["postgres"] }
