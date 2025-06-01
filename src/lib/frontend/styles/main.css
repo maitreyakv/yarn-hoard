@@ -11,10 +11,15 @@
   font-style: normal;
 }
 
+html, body {
+    margin: 0;
+    height: 100%;
+    background-color: var(--primary);
+}
+
 .text-center {
   text-align: center;
 }
-
 
 .input {
   box-sizing: border-box;
@@ -38,7 +43,7 @@
 }
 
 .label {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .card {
@@ -55,7 +60,7 @@
 }
 
 .card-title {
-  font-size: 1.1rem;
+  font-size: 1.2em;
   font-weight: 600;
 }
 
@@ -67,6 +72,14 @@
   margin: 24px;
 }
 
+#signup-page {
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
 #signup-container {
-  width: 400px;
+  width: 360px;
+  background-color: var(--primary);
 }
