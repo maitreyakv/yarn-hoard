@@ -1,4 +1,7 @@
-use axum::extract::{Path, State};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+};
 use entity::{confirmations, users};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set,
@@ -17,10 +20,10 @@ pub async fn confirm(
         .find_also_related(users::Entity)
         .one(&db)
         .await?
-        .ok_or(AppError::NotFound)?;
+        .ok_or(StatusCode::NOT_FOUND)?;
     let user = user.ok_or_else(|| {
         error!(?confirmation, "Confirmation has no user!");
-        AppError::InternalServerError
+        StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
     db.transaction::<_, (), sea_orm::DbErr>(|txn| {

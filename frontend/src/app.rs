@@ -21,9 +21,9 @@ pub fn App() -> View {
     provide_context({
         let api_url = std::env!("API_URL");
         if api_url.contains("localhost") {
-            ApiClient::insecure(&api_url)
+            ApiClient::insecure(api_url)
         } else {
-            ApiClient::secure(&api_url)
+            ApiClient::secure(api_url)
         }
     });
 

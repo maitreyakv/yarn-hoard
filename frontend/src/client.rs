@@ -1,3 +1,4 @@
+use reqwest::StatusCode;
 use secrecy::{ExposeSecret, SecretString};
 
 macro_rules! jsonapi_create {
@@ -45,19 +46,23 @@ impl ApiClient {
         email: &str,
         password: &SecretString,
     ) -> Result<(), ApiClientError> {
-        Ok(self
-            .http_client
+        self.http_client
             .post(format!("{}:{}/api/v1/users", self.protocol, self.base_url))
             .json(&jsonapi_create!("users", {"email": email, "password": password.expose_secret()}))
             .send()
-            .await?
+            .await
+            .map_err(ApiClientError::SendFailure)?
             .error_for_status()
-            .map(|_| {})?)
+            .map(|_| ())
+            .map_err(|e| ApiClientError::ErrorStatusCode(e.status().unwrap()))
     }
 }
 
 #[derive(Debug, thiserror::Error)]
 pub enum ApiClientError {
-    #[error(transparent)]
-    ReqwestError(#[from] reqwest::Error),
+    #[error("Failed to send request!")]
+    SendFailure(#[source] reqwest::Error),
+
+    #[error("Received error status code {0}!")]
+    ErrorStatusCode(StatusCode),
 }

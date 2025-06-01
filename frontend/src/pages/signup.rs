@@ -2,7 +2,6 @@ use sycamore::prelude::*;
 
 use crate::atoms::{Card, CardContent, CardFooter, CardHeader, CardTitle};
 use crate::organisms::SignupForm;
-use crate::util::inject_style_tag_into_document_head;
 
 #[component]
 pub fn SignupPage() -> View {

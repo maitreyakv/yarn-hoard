@@ -1,4 +1,6 @@
+use axum::http::StatusCode;
 use entity::{confirmations, users};
+use frontend::ApiClientError;
 use sea_orm::EntityTrait;
 use secrecy::SecretString;
 
@@ -38,21 +40,48 @@ async fn create_inserts_new_confirmation_when_ok() {
 }
 
 #[tokio::test]
+async fn create_returns_409_when_user_already_exists() {
+    let error = TestApp::new()
+        .await
+        .with_unactivated_user()
+        .await
+        .api_client
+        .create_user(
+            "test@example.com",
+            &SecretString::new("somePassword".into()),
+        )
+        .await
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        ApiClientError::ErrorStatusCode(StatusCode::CONFLICT)
+    ))
+}
+
+#[tokio::test]
 async fn create_returns_err_when_email_is_empty() {
-    TestApp::new()
+    let error = TestApp::new()
         .await
         .api_client
         .create_user("", &SecretString::new("somePassword".into()))
         .await
         .unwrap_err();
+    assert!(matches!(
+        error,
+        ApiClientError::ErrorStatusCode(StatusCode::BAD_REQUEST)
+    ))
 }
 
 #[tokio::test]
 async fn create_returns_err_when_password_is_shorter_than_8_characters() {
-    TestApp::new()
+    let error = TestApp::new()
         .await
         .api_client
         .create_user("test@example.com", &SecretString::new("1234567".into()))
         .await
         .unwrap_err();
+    assert!(matches!(
+        error,
+        ApiClientError::ErrorStatusCode(StatusCode::BAD_REQUEST)
+    ))
 }

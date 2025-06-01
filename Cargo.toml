@@ -9,11 +9,22 @@ members = [ "backend", "entity", "frontend", "migration" ]
 
 [workspace.dependencies]
 anyhow = "1.0.97"
+axum = "0.8.1"
+entity = { path = "./entity" }
+sea-orm = { version = "1.1.7", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = "1.0.219"
 serde_json = "1.0.140"
 thiserror = "2.0.12"
+tokio = "1.44.1"
 tracing = "0.1.41"
 
 [dev-dependencies]
+axum = { workspace = true }
+backend = { path = "./backend" }
+entity = { workspace = true }
+frontend = { path = "./frontend" }
+sea-orm = { workspace = true }
+secrecy = { workspace = true }
 testcontainers-modules = { version = "0.11.6", features = ["postgres"] }
+tokio = { workspace = true }

@@ -92,7 +92,7 @@ impl Form {
     async fn submit(self, api_client: ApiClient) -> Result<(), ApiClientError> {
         let email = self.email.get_clone();
         let password = SecretString::new(self.password.get_clone().into());
-        api_client.create_user(&email, &password).await
+        api_client.create_user(&email, &password).await.map(|_| ())
     }
 }
 

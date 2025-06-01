@@ -58,11 +58,14 @@ pub enum AppError {
     #[error(transparent)]
     TransactionError(#[from] TransactionError<DbErr>),
 
-    #[error("{}", StatusCode::NOT_FOUND)]
-    NotFound,
+    #[error("{0}")]
+    StatusCode(StatusCode),
+}
 
-    #[error("{}", StatusCode::INTERNAL_SERVER_ERROR)]
-    InternalServerError,
+impl From<StatusCode> for AppError {
+    fn from(status: StatusCode) -> Self {
+        Self::StatusCode(status)
+    }
 }
 
 impl IntoResponse for AppError {
@@ -72,8 +75,7 @@ impl IntoResponse for AppError {
             Self::TransactionError(e) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response()
             }
-            Self::NotFound => StatusCode::NOT_FOUND.into_response(),
-            Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+            Self::StatusCode(status) => status.into_response(),
         }
     }
 }
