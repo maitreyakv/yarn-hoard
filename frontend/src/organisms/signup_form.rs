@@ -1,11 +1,12 @@
 use std::sync::Once;
 
+use reqwest::StatusCode;
 use secrecy::SecretString;
 use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
 use tracing::{debug, error, info};
 
-use crate::atoms::Button;
+use crate::atoms::{Button, Toaster};
 use crate::molecules::{EmailInput, PasswordInput};
 use crate::util::inject_style_tag_into_document_head;
 use crate::{ApiClient, ApiClientError};
@@ -19,6 +20,7 @@ pub fn SignupForm() -> View {
         inject_style_tag_into_document_head(include_str!("signup_form.css"));
     });
 
+    let toaster = use_context::<Toaster>();
     let api_client = use_context::<ApiClient>();
     let form = Form::new();
     let status = create_signal(SubmitStatus::None);
@@ -41,12 +43,25 @@ pub fn SignupForm() -> View {
             async move {
                 status.set(SubmitStatus::Pending);
                 let result = form.submit(api_client).await;
-                if result.is_ok() {
-                    info!("Submit was successful");
-                    status.set(SubmitStatus::Success);
-                } else {
-                    error!("Submit failed!");
-                    status.set(SubmitStatus::Failure);
+                match result {
+                    Ok(_) => {
+                        info!("Submit was successful");
+                        status.set(SubmitStatus::Success);
+                    }
+                    Err(api_client_error) => {
+                        error!(?api_client_error, "Submit failed!");
+                        toaster.warn(match api_client_error {
+                            ApiClientError::ErrorStatusCode(StatusCode::CONFLICT) => {
+                                format!("That email is already in use, please try logging in.")
+                            }
+                            _ => {
+                                format!(
+                                    "There was an issue creating your account, please try again."
+                                )
+                            }
+                        });
+                        status.set(SubmitStatus::Failure);
+                    }
                 };
             }
         });

@@ -23,3 +23,15 @@ pub fn inject_style_tag_into_document_head(style: &str) {
         debug!(?style, "Injected style tag into header");
     }
 }
+
+#[macro_export]
+macro_rules! class (
+    // Match a single string literal
+    ($first:expr) => {
+        $first.to_string()
+    };
+    // Match multiple string literals
+    ($first:expr, $($rest:expr),+) => {
+        format!("{} {}", $first, class!($($rest),+))
+    };
+);

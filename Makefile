@@ -6,6 +6,9 @@ CARGO_FMT_CMD = fmt --check --all
 all:
 	COMPOSE_BAKE=true docker compose up --watch --build
 
+serve:
+	API_URL="localhost:3000" trunk serve --config=frontend/Trunk.toml
+
 clean:
 	docker compose down
 	cargo clean
