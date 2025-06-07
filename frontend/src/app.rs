@@ -2,6 +2,7 @@ use sycamore::prelude::*;
 use sycamore_router::{HistoryIntegration, Route, Router};
 
 use crate::ApiClient;
+use crate::atoms::Toaster;
 use crate::pages::{LandingPage, LoginPage, SignupPage};
 
 #[derive(Route, Clone)]
@@ -27,7 +28,11 @@ pub fn App() -> View {
         }
     });
 
+    provide_context(Toaster::new());
+    let toaster = use_context::<Toaster>();
+
     view! {
+        (toaster.view())
         Router(
             integration=HistoryIntegration::new(),
             view=|route: ReadSignal<AppRoutes>| {

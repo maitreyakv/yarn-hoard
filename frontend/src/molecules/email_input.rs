@@ -17,7 +17,7 @@ pub fn EmailInput(#[prop(setter(into))] bind: Signal<String>) -> View {
                 label(class="label") { "Email" }
             }
             div {
-                input(class="input", r#type="email", bind:value=bind)
+                input(class="input", bind:value=bind)
             }
         }
     }

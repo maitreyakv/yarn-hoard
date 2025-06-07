@@ -1,5 +1,7 @@
+use email_address::EmailAddress;
 use reqwest::StatusCode;
-use secrecy::{ExposeSecret, SecretString};
+
+use crate::Password;
 
 macro_rules! jsonapi_create {
     ($t:literal, $a:tt) => {
@@ -43,12 +45,12 @@ impl ApiClient {
     #[tracing::instrument(skip(self), err)]
     pub async fn create_user(
         &self,
-        email: &str,
-        password: &SecretString,
+        email: &EmailAddress,
+        password: &Password,
     ) -> Result<(), ApiClientError> {
         self.http_client
             .post(format!("{}:{}/api/v1/users", self.protocol, self.base_url))
-            .json(&jsonapi_create!("users", {"email": email, "password": password.expose_secret()}))
+            .json(&jsonapi_create!("users", {"email": email, "password": password.expose()}))
             .send()
             .await
             .map_err(ApiClientError::SendFailure)?
