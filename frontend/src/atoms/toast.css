@@ -9,6 +9,8 @@
   top: 30px;
   text-align: center;
   animation: fadeout 0.5s;
+  display: flex;
+  align-items: center;
 }
 
 .toast-show {
@@ -35,7 +37,7 @@
 .toast-warning {
   border: 2px solid black;
   border-radius: 6px;
-  padding: 12px 16px;
+  padding: 12px 4px;
   box-shadow: 4px 4px;
   min-width: 600px;
   background-color: var(--secondary);

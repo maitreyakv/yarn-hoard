@@ -3,6 +3,7 @@ use std::sync::Once;
 
 use sycamore::prelude::*;
 
+use crate::atoms::Icon;
 use crate::class;
 use crate::util::inject_style_tag_into_document_head;
 
@@ -55,7 +56,10 @@ impl Toast {
             Self::Warning(text) => {
                 let text = text.to_string();
                 view! {
-                     ToastView(class="toast-warning") { (text) }
+                     ToastView(class="toast-warning") {
+                        (Icon::Warning.view())
+                        (text)
+                    }
                 }
             }
         }
