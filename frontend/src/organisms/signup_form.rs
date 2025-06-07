@@ -5,7 +5,7 @@ use anyhow::anyhow;
 use reqwest::StatusCode;
 use sycamore::prelude::*;
 use sycamore::web::events::SubmitEvent;
-use tracing::{debug, info, warn};
+use tracing::{debug, error, info, warn};
 
 use crate::atoms::{Button, Toaster};
 use crate::molecules::{EmailInput, PasswordInput};
@@ -24,12 +24,12 @@ pub fn SignupForm() -> View {
     let toaster = use_context::<Toaster>();
     let api_client = use_context::<ApiClient>();
     let form = Form::new();
-    let pending = create_signal(false);
+    let status = create_signal(Status::None);
 
     let handle_submit = move |event: SubmitEvent| {
         event.prevent_default();
 
-        if pending.get() {
+        if let Status::Pending = status.get() {
             debug!("Submission already in progress, aborting this submit");
             return;
         }
@@ -37,18 +37,23 @@ pub fn SignupForm() -> View {
         sycamore::futures::spawn_local({
             let api_client = api_client.clone();
             async move {
-                pending.set(true);
+                status.set(Status::Pending);
                 let result = form.submit(api_client).await;
                 match result {
                     Ok(_) => {
                         info!("Submit was successful");
+                        status.set(Status::Success);
+                        window()
+                            .location()
+                            .set_href("/confirm")
+                            .unwrap_or_else(|_| error!("Failed to navigate to `/confirm`!"));
                     }
                     Err(error) => {
                         warn!("{error}");
                         toaster.warn(error.to_string());
+                        status.set(Status::Failure);
                     }
                 };
-                pending.set(false);
             }
         });
     };
@@ -93,4 +98,12 @@ impl Form {
                 }
             })?)
     }
+}
+
+#[derive(Clone, Copy)]
+enum Status {
+    None,
+    Pending,
+    Success,
+    Failure,
 }

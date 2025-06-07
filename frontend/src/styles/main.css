@@ -45,3 +45,18 @@ html, body {
   width: 360px;
   background-color: var(--primary);
 }
+
+/*TODO: Dedupe this with signup*/
+#confirm-page{
+  background-color: var(--primary);
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+/*TODO: Dedupe this with signup*/
+#confirm-container{
+  width: 360px;
+  background-color: var(--primary);
+}

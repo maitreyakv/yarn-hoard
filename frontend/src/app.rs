@@ -3,16 +3,25 @@ use sycamore_router::{HistoryIntegration, Route, Router};
 
 use crate::ApiClient;
 use crate::atoms::Toaster;
-use crate::pages::{LandingPage, LoginPage, SignupPage};
+use crate::pages::{ConfirmPage, LandingPage, LoginPage, SignupPage};
 
 #[derive(Route, Clone)]
 enum AppRoutes {
     #[to("/")]
     Landing,
+
     #[to("/signup")]
     Signup,
+
+    #[to("/confirm")]
+    ConfirmNoToken,
+
+    #[to("/confirm/<token>")]
+    Confirm(String),
+
     #[to("/login")]
     Login,
+
     #[not_found]
     NotFound,
 }
@@ -41,6 +50,8 @@ pub fn App() -> View {
                         (match route.get_clone() {
                             AppRoutes::Landing => LandingPage(),
                             AppRoutes::Signup => SignupPage(),
+                            AppRoutes::ConfirmNoToken => view! { ConfirmPage() },
+                            AppRoutes::Confirm(token)=> view! { ConfirmPage(token=token) },
                             AppRoutes::Login => LoginPage(),
                             AppRoutes::NotFound => "404 Not Found".into(),
                         })
